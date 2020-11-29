@@ -22,7 +22,13 @@ class AMapMainWindow : public QMainWindow
 
 public:
     AMapMainWindow(QWidget *parent = nullptr);
+
     ~AMapMainWindow();
+    void addOneMark(double lat,double lng,QString labelname);
+    void getMarkerIconpath(QString path);
+    void removeAllMark();
+    void saveAllMarkToFile();
+private:
     QWebEngineView *p_AmapView;
     QWebChannel *p_AmapChannel;
     JSWebBridge *p_AmapBridge;
@@ -35,8 +41,18 @@ public:
     QPushButton *p_saveAllMarkToFile;
     QVBoxLayout *p_operaterLayout;
     QWidget *p_operaterLayoutWidget;
+    QLineEdit *latLineEdit;
+    QLineEdit *lngLineEdit;
+    QLineEdit *nameLineEdit;
+    QString loadMarkFilePath;
 private:
     Ui::AMapMainWindow *ui;
     void resizeEvent(QResizeEvent* size);
+
+public slots:
+    void addOneMarkBtnClickEvent();
+    void removeAllMarkBtnClickEvent();
+    void addMarkFromFileBtnClickEvent();
+    void saveAllMarkToFileBtnClickEvent();
 };
 #endif // AMAPMAINWINDOW_H

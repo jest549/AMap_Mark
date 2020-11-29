@@ -13,11 +13,12 @@ class JSWebBridge : public QObject
 public:
     explicit JSWebBridge(QObject *parent = nullptr);
 
+    QString saveAllMarkPath;
 signals:
-
 public slots:
-    void GetPointLatLngFromAMap(const QString lat,const QString lng);
+    void GetPointLatLngFromAMap(const QString lat,const QString lng,const QString name);
     QString GetAMapAuthorName();
+    void  saveAllMarkToFileFromAMap(QString lat,QString lng,QString labelname);
 };
 
 #endif // JSWEBBRIDGE_H

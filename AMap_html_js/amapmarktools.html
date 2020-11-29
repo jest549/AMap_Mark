@@ -24,7 +24,72 @@
     <body>
         <div id="container"></div>
         <script>
-            var map = new AMap.Map("container",{zoom:14,center:[113.324,23.106]});
+           
         </script>
     </body>
 </html>
+<script src="qwebchannel.js"></script>
+<script type="text/javascript">
+        var map = new AMap.Map("container",{zoom:14,center:[113.324,23.106]});
+        var MarkIconpath;
+        var amap_bridge;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            amap_bridge = channel.objects.amap_bridge;  //bridge_name 与QT 中一致
+    });
+        var AuthorName=amap_bridge.GetAMapAuthorName();
+        function getMarkerIconpath(icon_path)
+         {
+            MarkIconpath=icon_path;
+         }
+    	function addOneMarker(lat, lng,titleName)
+         {
+            //GPS转高德坐标
+            var gps = [parseFloat(lng),parseFloat(lat)];
+            if(titleName=="")
+            {
+                titleName="undefine_markname";
+            }
+            AMap.convertFrom(gps, 'gps', function (status, result) 
+            {
+                if (result.info === 'ok')
+                {
+                    var lnglats= result.locations; // Array.<LngLat>
+                    var marker = new AMap.Marker(
+                            {   position:lnglats[0], // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                                title:titleName,
+                                icon:MarkIconpath,
+                            });
+                    marker.setClickable(true);
+                    marker.on("rightclick", function (e){
+                        if (confirm('确定要删除吗') == true) 
+                        {
+                            map.remove(marker);
+                            return true;
+                        } 
+                        else
+                        {
+                            return false;
+                        }
+                    },"rightclick");
+                    marker.setMap(map);
+                    map.setCenter(lnglats[0]);
+                 }
+            });
+        }
+        function removeAllMark()
+        {
+            map.clearMap();
+        }
+        function saveMarkToFile()
+        {
+            var markeroverlaysList = map.getAllOverlays('marker'); 
+            for(var i=0;i<markeroverlaysList.length;i++)
+            {
+                var position=markeroverlaysList[i].getPosition();
+                var title=markeroverlaysList[i].getTitle();
+                amap_bridge.saveAllMarkToFileFromAMap(position.lat,position.lng,title);
+                
+            }
+        }
+
+</script>
