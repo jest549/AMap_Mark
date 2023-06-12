@@ -12,6 +12,8 @@
 #include "jswebbridge.h"
 #include <QLineEdit>
 #include <QPushButton>
+#include <QComboBox>
+#include <QLabel>
 QT_BEGIN_NAMESPACE
 namespace Ui { class AMapMainWindow; }
 QT_END_NAMESPACE
@@ -44,6 +46,11 @@ private:
     QLineEdit *latLineEdit;
     QLineEdit *lngLineEdit;
     QLineEdit *nameLineEdit;
+    QLineEdit *logLngColumnEdit;//经度所在列
+    QLineEdit *logLatColumnEdit;//维度所在列
+    QLineEdit *logNameColumnEdit;//打点名所在列
+    QLineEdit *logStartRowEdit;//开始打点的行
+    QComboBox *selectLogGPSFormat;//选择GPS地图数据格式
     QString loadMarkFilePath;
 private:
     Ui::AMapMainWindow *ui;
