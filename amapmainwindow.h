@@ -1,4 +1,4 @@
-#ifndef AMAPMAINWINDOW_H
+﻿#ifndef AMAPMAINWINDOW_H
 #define AMAPMAINWINDOW_H
 
 #include <QMainWindow>
@@ -14,15 +14,19 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QLabel>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class AMapMainWindow; }
 QT_END_NAMESPACE
+
 
 class AMapMainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
+    constexpr static int GPSFormat_DD_DDDDDD= 0;
+    constexpr static int GPSFormat_DDMM_MMMMMM= 1;
     AMapMainWindow(QWidget *parent = nullptr);
 
     ~AMapMainWindow();
@@ -37,6 +41,14 @@ private:
     QMainWindow *p_AmapViewWedget;
     QHBoxLayout *p_AmapHLayout;
     QWidget *p_AmapHLayoutWidget;
+
+    QWebEngineView *p_BaiduView;
+    QWebChannel *p_BaiduChannel;
+    JSWebBridge *p_BaiduBridge;
+    QMainWindow *p_BaiduViewWedget;
+    QWidget *p_BaiduHLayoutWidget;
+    QHBoxLayout *p_BaiduHLayout;
+
     QPushButton *p_addOneMark;
     QPushButton *p_addMarkFromFile;
     QPushButton *p_removeAllMark;

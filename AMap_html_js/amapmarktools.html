@@ -1,10 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>  
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
         <title>高德地图打点小工具</title>
-        <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=af8b9a8710ed88241cfd79083004d1dd"></script>
+<!--
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=af8b9a8710ed88241cfd79083004d1dd"></script>
+-->
+        <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=7a608be3db2f08377a8dbc098421ab64&&plugin=AMap.MapType,AMap.Scale,AMap.OverView,AMap.ToolBar"></script>
         <style>
         *{
             margin: 0;
@@ -35,6 +38,10 @@
         var amap_bridge;
         new QWebChannel(qt.webChannelTransport, function (channel) {
             amap_bridge = channel.objects.amap_bridge;  //bridge_name 与QT 中一致
+        map.addControl(new AMap.MapType({
+                 defaultType:0,//0代表默认，1代表卫星
+                 showRoad:true//显示路况（右上角也可点击）
+             }));
     });
         var AuthorName=amap_bridge.GetAMapAuthorName();
         function getMarkerIconpath(icon_path)
@@ -49,7 +56,7 @@
             {
                 titleName="undefine_markname";
             }
-            AMap.convertFrom(gps, 'gps', function (status, result) 
+            AMap.convertFrom(gps, 'gps', function (status, result)
             {
                 if (result.info === 'ok')
                 {
@@ -58,21 +65,35 @@
                             {   position:lnglats[0], // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
                                 title:titleName,
                                 icon:MarkIconpath,
+                                //label:titleName
                             });
+                    //marker.setLabel(titleName);
+
                     marker.setClickable(true);
                     marker.on("rightclick", function (e){
-                        if (confirm('确定要删除吗') == true) 
+                        if (confirm('确定要删除吗') == true)
                         {
                             map.remove(marker);
                             return true;
-                        } 
+                        }
                         else
                         {
                             return false;
                         }
                     },"rightclick");
+
                     marker.setMap(map);
+
+                    //var text = new AMap.Text({
+                    //    position: lnglats[0],
+                    //    anchor: 'top-center',
+                    //    text: titleName,
+                    //    offset: new AMap.Pixel(0, -20)
+                    //});
+                    //map.add(text);
+
                     map.setCenter(lnglats[0]);
+
                  }
             });
         }
@@ -82,13 +103,13 @@
         }
         function saveMarkToFile()
         {
-            var markeroverlaysList = map.getAllOverlays('marker'); 
+            var markeroverlaysList = map.getAllOverlays('marker');
             for(var i=0;i<markeroverlaysList.length;i++)
             {
                 var position=markeroverlaysList[i].getPosition();
                 var title=markeroverlaysList[i].getTitle();
                 amap_bridge.saveAllMarkToFileFromAMap(position.lat,position.lng,title);
-                
+
             }
         }
 

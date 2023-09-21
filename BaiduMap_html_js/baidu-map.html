@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <style type="text/css">
+                body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+        </style>
+        <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=gQnw8CWFOLMemuvdtni3FobrO2yfn5cC&s=1"></script>
+        <title>根据城市名设置地图中心点</title>
+</head>
+<body>
+        <div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+        // 百度地图API功能
+        var map = new BMap.Map("allmap");  // 创建Map实例
+        var pointCenter = new BMap.Point(113.324,23.115);
+        map.enableDragging();
+        map.enableInertialDragging();
+        map.enableScrollWheelZoom();
+        map.enablePinchToZoom();
+        map.enableContinuousZoom();
+        map.enableKeyboard();
+        map.addControl(new BMap.NavigationControl());
+        map.addControl(new BMap.MapTypeControl({ mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP] })); //2D图，卫星图
+        map.addControl(new BMap.OverviewMapControl({ isOpen: false, anchor: BMAP_ANCHOR_BOTTOM_RIGHT }));   //添加默认缩略地图控件//右下角，打开
+        map.centerAndZoom(pointCenter, 15);
+        var MarkIconpath;
+        var amap_bridge;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            bmap_bridge = channel.objects.bmap_bridge;  //bridge_name 与QT 中一致
+        });
+        var AuthorName=bmap_bridge.GetAMapAuthorName();
+        function getMarkerIconpath(icon_path)
+         {
+            MarkIconpath=icon_path;
+         }
+        function addOneMarker(lat, lng,titleName)
+         {
+            var ggPoint = new BMap.Point(lng,lat);
+            if(titleName=="")
+            {
+                titleName="undefine_markname";
+            }
+            //坐标转换完之后的回调函数
+             translateCallback = function (data){
+               if(data.status === 0) {
+                 var marker = new BMap.Marker(data.points[0]);
+                 map.addOverlay(marker);
+                 //var label = new BMap.Label(titleName,{offset:new BMap.Size(20,-10)});
+                 //marker.setLabel(label);
+                 map.setCenter(data.points[0]);
+               }
+             }
+
+             setTimeout(function(){
+                 var convertor = new BMap.Convertor();
+                 var pointArr = [];
+                 pointArr.push(ggPoint);
+                 convertor.translate(pointArr, 1, 5, translateCallback)
+             }, 1000);
+        }
+        function removeAllMark()
+        {
+            map.clearOverlays();
+        }
+        function saveMarkToFile()
+        {
+            var markeroverlaysList = map.getAllOverlays('marker');
+            for(var i=0;i<markeroverlaysList.length;i++)
+            {
+                var position=markeroverlaysList[i].getPosition();
+                var title=markeroverlaysList[i].getTitle();
+                amap_bridge.saveAllMarkToFileFromAMap(position.lat,position.lng,title);
+
+            }
+        }
+</script>
+
